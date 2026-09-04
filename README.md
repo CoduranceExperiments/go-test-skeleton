@@ -3,9 +3,13 @@
 A small Go service skeleton, used as the starting point for the Codurance Go
 exercise.
 
-**You have 30 minutes.** Four tasks, time-boxed below. The boxes are there so
-you can pace yourself and so we assess everyone on the same footing — they are
-not a race. Finishing three tasks well beats four in a hurry.
+**You have 30 minutes.** Two coding tasks and a discussion, time-boxed below.
+The boxes are there so you can pace yourself and so we assess everyone on the
+same footing — they are not a race.
+
+Task 2 has the largest box because it is the one we are most interested in.
+Getting that right and leaving the stretch work untouched is a good outcome,
+not a shortfall.
 
 ## Before the clock starts
 
@@ -40,7 +44,11 @@ response body must include the API version as well as the status. Keep it to
 that one endpoint — we are not assessing API design, but we are interested in
 how you handle two versions that are *nearly* the same.
 
-## Task 2 — Shut down gracefully (12 min)
+## Task 2 — Shut down gracefully (16 min)
+
+This is the task we are most interested in, and it has the largest time box
+for that reason. It is as much about goroutines, channels and `context` as it
+is about HTTP, so take the time rather than rushing on to task 3.
 
 Ctrl-C currently kills the process instantly and drops in-flight requests.
 Make it shut down cleanly:
@@ -57,25 +65,27 @@ already written and should not need changing.
 constant is fine), draining anything other than HTTP requests, and
 connection-level tracking.
 
-## Task 3 — Test it (5 min)
+## Task 3 — Discussion (6 min, no code)
 
-Add a test covering the v2 endpoint from task 1.
+Down tools and talk us through two things. Bullets in a scratch file are fine
+if you would rather write than talk.
 
-Then tell us, in a sentence or a comment, **what you deliberately did not
-test, and why.** We are more interested in that answer than in the number of
-tests you got written.
+**Testing.** What would you test about the work you just did, what would you
+deliberately *not* bother testing, and why? We are more interested in this
+than in test code written against the clock.
 
-## Task 4 — Tell us what you'd change (4 min, no code)
+**The skeleton itself.** You have now read most of this codebase. Name two or
+three things you would change about it — design, structure, error handling,
+testability, production-readiness, anything — and why. Be blunt. There is
+plenty here worth criticising, and we would much rather hear it from you than
+not.
 
-You have now read most of this codebase. Name **two or three things you would
-change** about the skeleton itself — design, structure, error handling,
-testability, production-readiness, anything — and why. Talking them through is
-fine; a few bullets in a scratch file is fine too.
+**Stretch, only if the time is genuinely there:** write one of the tests you
+described. `api/routes/v1_test.go` is a working example to adapt. Do not start
+it at the expense of task 2 — an unfinished shutdown with a neat test beside
+it is the worse outcome.
 
-Be blunt. There is plenty here worth criticising, and we would rather hear it
-from you than not.
-
-## Before you finish (2 min)
+## Before you finish (1 min)
 
 ```sh
 make check     # gofmt + go vet + race tests
@@ -85,7 +95,7 @@ make check     # gofmt + go vet + race tests
 
 - Idiomatic, readable Go. Three clear things beat six clever ones.
 - Errors that say what went wrong and where.
-- A test that would catch a real regression.
+- A clear sense of what is worth testing, and what isn't.
 - Judgement about scope. If you run out of time, say what you would do next
   and why — an honest `TODO` beats a rushed implementation, and we would much
   rather discuss it than watch you rush.
