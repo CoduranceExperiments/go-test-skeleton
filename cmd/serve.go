@@ -4,8 +4,6 @@ Copyright © 2026 Codurance
 package cmd
 
 import (
-	"context"
-
 	"github.com/CoduranceExperiments/go-test-skeleton/api"
 	"github.com/CoduranceExperiments/go-test-skeleton/api/routes"
 	"github.com/spf13/cobra"
@@ -19,20 +17,26 @@ var serveCmd = &cobra.Command{
 	Short: "Starts the API server",
 	Long:  `Runs the Codurance Test API server`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		v1, err := routes.New(routes.RouteVersionOne)
+		router, err := routes.NewRouter(routes.All()...)
 		if err != nil {
 			return err
 		}
-		opts := []api.Opt{
+
+		srv, err := api.New(
 			api.WithPort(port),
-			api.WithRouter(v1.Router()),
+			api.WithHandler(router),
+		)
+		if err != nil {
+			return err
 		}
-		srv := api.New(opts...)
-		return srv.Serve(context.Background())
+
+		// cmd.Context() is currently never cancelled. See the TODO on
+		// api.RestService.Serve.
+		return srv.Serve(cmd.Context())
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
-	serveCmd.Flags().IntVarP(&port, "port", "p", 3000, "Print this help message")
+	serveCmd.Flags().IntVarP(&port, "port", "p", 3000, "Port the API server listens on")
 }

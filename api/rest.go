@@ -2,25 +2,29 @@ package api
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 type RestService struct {
-	server *http.Server
-	config *Config
-	router *gin.Engine
+	server  *http.Server
+	config  *Config
+	handler http.Handler
 }
 
-func (r *RestService) Serve(ctx context.Context) error {
-	log.Printf("Listening on 0.0.0.0:%d", r.config.Port)
-	// TODO: Implement graceful shutdown...
-	return r.server.ListenAndServe()
-
+// Serve starts the server and blocks until it stops.
+//
+// TODO(candidate): Serve currently ignores ctx and returns an error even on a
+// clean shutdown. Make it shut down gracefully when ctx is cancelled, and have
+// cmd/serve.go cancel ctx on SIGINT/SIGTERM. In-flight requests should be
+// allowed to finish, under a bounded timeout.
+func (s *RestService) Serve(ctx context.Context) error {
+	slog.Info("server listening", "addr", s.server.Addr)
+	return s.server.ListenAndServe()
 }
 
-func (r *RestService) Stop(ctx context.Context) error {
-	return r.server.Shutdown(context.Background())
+// Stop gracefully shuts the server down, waiting for in-flight requests until
+// ctx is done.
+func (s *RestService) Stop(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }

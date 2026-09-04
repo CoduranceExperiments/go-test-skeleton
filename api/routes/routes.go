@@ -1,30 +1,50 @@
 package routes
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
-type ServiceAPI interface {
-	V1() ServiceAPI
-	// TODO: Demonstrate how you would create a V2 API
+// Version is a mountable version of the service API.
+//
+// To add a version, implement this interface in its own file and add it to
+// All. Nothing else needs to change.
+type Version interface {
+	// Prefix is the path the version mounts under, without a leading slash,
+	// e.g. "v1".
+	Prefix() string
+	// Register attaches the version's handlers to r, which is already scoped
+	// to Prefix.
+	Register(r gin.IRouter)
 }
 
-type ServiceRoutes interface {
-	Router() *gin.Engine
-	RouteGroup() *gin.RouterGroup
-	Get(ctx *gin.Context)
-}
-
-func New(version string) (ServiceRoutes, error) {
-	// TODO: Demonstrate how you would create a V2 API
-	switch version {
-	case RouteVersionOne:
-		v1 := &V1{Path: RouteVersionOne, router: gin.Default()}
-		v1.RouteGroup()
-		return v1, nil
-	default:
-		return nil, errors.New("version not supported")
+// All returns every version the server mounts.
+func All() []Version {
+	return []Version{
+		V1{},
 	}
+}
+
+// NewRouter returns an engine with each version mounted under its own prefix.
+func NewRouter(versions ...Version) (*gin.Engine, error) {
+	if len(versions) == 0 {
+		return nil, fmt.Errorf("routes: no versions to mount")
+	}
+
+	engine := gin.Default()
+	seen := make(map[string]struct{}, len(versions))
+	for _, v := range versions {
+		prefix := v.Prefix()
+		if prefix == "" {
+			return nil, fmt.Errorf("routes: version %T has an empty prefix", v)
+		}
+		if _, dup := seen[prefix]; dup {
+			return nil, fmt.Errorf("routes: duplicate prefix %q", prefix)
+		}
+		seen[prefix] = struct{}{}
+
+		v.Register(engine.Group(prefix))
+	}
+	return engine, nil
 }

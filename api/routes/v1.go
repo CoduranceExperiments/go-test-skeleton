@@ -6,23 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const RouteVersionOne = "v1"
+// V1 is version 1 of the service API.
+type V1 struct{}
 
-type V1 struct {
-	router *gin.Engine
-	Path   string
+func (V1) Prefix() string { return "v1" }
+
+func (v V1) Register(r gin.IRouter) {
+	// Register the version root as "" rather than "/" so that GET /v1 answers
+	// directly instead of redirecting to GET /v1/.
+	r.GET("", v.Status)
 }
 
-func (s *V1) Router() *gin.Engine {
-	return s.router
-}
-
-func (s *V1) RouteGroup() *gin.RouterGroup {
-	group := s.router.Group(s.Path)
-	group.GET("/", s.Get)
-	return group
-}
-
-func (s *V1) Get(ctx *gin.Context) {
+// Status reports that the service is up.
+func (V1) Status(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
 }

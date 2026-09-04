@@ -1,10 +1,11 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-type Opt func(r *RestService)
+// Opt configures a RestService during New.
+type Opt func(*RestService)
 
 type Config struct {
 	Port int
@@ -16,8 +17,10 @@ func WithPort(port int) Opt {
 	}
 }
 
-func WithRouter(r *gin.Engine) Opt {
+// WithHandler sets the handler the server serves. Taking an http.Handler
+// rather than a *gin.Engine keeps the web framework out of this package's API.
+func WithHandler(h http.Handler) Opt {
 	return func(s *RestService) {
-		s.router = r
+		s.handler = h
 	}
 }

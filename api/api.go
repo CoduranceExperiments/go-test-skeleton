@@ -1,28 +1,36 @@
 package api
 
 import (
-	"context"
+	"errors"
 	"fmt"
 	"net/http"
+	"time"
 )
 
-type Server interface {
-	Serve(ctx context.Context) error
-	Stop(ctx context.Context) error
-}
+const (
+	defaultPort       = 3000
+	readHeaderTimeout = 10 * time.Second
+)
 
-func New(opt ...Opt) *RestService {
-	r := &RestService{
+// New builds a RestService from opts. A handler is required; everything else
+// has a default.
+func New(opts ...Opt) (*RestService, error) {
+	s := &RestService{
 		config: &Config{
-			Port: 3000,
+			Port: defaultPort,
 		},
 	}
-	for _, o := range opt {
-		o(r)
+	for _, o := range opts {
+		o(s)
 	}
-	r.server = &http.Server{
-		Addr:    fmt.Sprintf(":%d", r.config.Port),
-		Handler: r.router.Handler(),
+	if s.handler == nil {
+		return nil, errors.New("api: no handler configured, pass WithHandler")
 	}
-	return r
+
+	s.server = &http.Server{
+		Addr:              fmt.Sprintf(":%d", s.config.Port),
+		Handler:           s.handler,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+	return s, nil
 }
