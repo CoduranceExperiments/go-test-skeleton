@@ -21,7 +21,7 @@ make run                      # starts the server on :3000
 curl -i localhost:3000/v1     # => 200 {"status":"ok"}
 ```
 
-## Orientation (2 min)
+## Orientation
 
 ```
 main.go               entrypoint
