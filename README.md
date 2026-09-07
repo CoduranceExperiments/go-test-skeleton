@@ -34,7 +34,7 @@ Start with `api/routes/routes.go` and `api/routes/v1.go` — together they are
 about 70 lines. The existing tests in `api/` and `api/routes/` show the house
 style for testing this codebase.
 
-## Task 1 — Add a v2 (5 min)
+## Task 1 — Add a v2
 
 Serve `v2` alongside `v1`, both from the same process at the same time, with
 `v1` unchanged.
@@ -44,7 +44,7 @@ response body must include the API version as well as the status. Keep it to
 that one endpoint — we are not assessing API design, but we are interested in
 how you handle two versions that are *nearly* the same.
 
-## Task 2 — Shut down gracefully (16 min)
+## Task 2 — Shut down gracefully
 
 This is the task we are most interested in, and it has the largest time box
 for that reason. It is as much about goroutines, channels and `context` as it
@@ -65,7 +65,7 @@ already written and should not need changing.
 constant is fine), draining anything other than HTTP requests, and
 connection-level tracking.
 
-## Task 3 — Discussion (6 min, no code)
+## Task 3 — Discussion
 
 Down tools and talk us through two things. Bullets in a scratch file are fine
 if you would rather write than talk.
@@ -85,7 +85,7 @@ described. `api/routes/v1_test.go` is a working example to adapt. Do not start
 it at the expense of task 2 — an unfinished shutdown with a neat test beside
 it is the worse outcome.
 
-## Before you finish (1 min)
+## Before you finish
 
 ```sh
 make check     # gofmt + go vet + race tests
